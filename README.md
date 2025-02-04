@@ -14,19 +14,19 @@
 # Como Utilizar
 Baixar os arquivos, a hierarquia das pastas e arquivos deve estar da seguinte forma
 
-## projeto/
-## │
-## ├── app/
-## │   ├── app.py                     # Script principal Streamlit
-## │   ├── extract_text_plumber.py    # (1) Extrair texto de PDF
-## │   ├── choose_model_t5.py         # (2a) Script do modelo T5
-## │   ├── choose_model_bart.py       # (2a) Script do modelo BART
-## │   ├── define_summary_specs.py    # (3) Define prompt e/ou formatação
-## │   ├── summarize_article.py       # (4) Gerar o resumo final usando o modelo
-## │   └── __init__.py
-## ├── requirements.txt           # Lista de dependências
-## ├── Dockerfile                 # Definição do container Docker
-## └── README.md
+ projeto/
+ │
+ ├── app/
+ │   ├── app.py                     # Script principal Streamlit
+ │   ├── extract_text_plumber.py    # (1) Extrair texto de PDF
+ │   ├── choose_model_t5.py         # (2a) Script do modelo T5
+ │   ├── choose_model_bart.py       # (2a) Script do modelo BART
+ │   ├── define_summary_specs.py    # (3) Define prompt e/ou formatação
+ │   ├── summarize_article.py       # (4) Gerar o resumo final usando o modelo
+ │   └── __init__.py
+ ├── requirements.txt           # Lista de dependências
+ ├── Dockerfile                 # Definição do container Docker
+ └── README.md
 
 # Instalar Dependências
 ## No Windows
