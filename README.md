@@ -54,6 +54,7 @@ No Windows, pode ser necessário trocar $(pwd) por ${PWD} ou usar o caminho comp
 # Melhorias
 
 ## 1) Reduzir o Prompt / Não Incluir o Texto “Faça um resumo do texto a seguir...”
+Esse texto se repetem em todos os resumos, pensar numa estratégia de primeiro fazer um resumo do texto, e texto passar pelo prompt.
 
 ## 2) Inserir opção de “penalidade de repetição” ou usar no_repeat_ngram_size
 Inserir nas opções o parametro de no_repeat_ngram_size, se este parametro for, isso indica evitar duplicar trechos de 3 tokens seguidos.
@@ -68,6 +69,17 @@ Exemplo:
         length_penalty=2.0
     )
 Isso diz ao modelo para penalizar a repetição e também para “encurtar” um pouco. Isso nem sempre é suportado em todas as versões do pipeline, mas geralmente funciona no transformers.pipeline("summarization").
+
+## 3) Retirar o prompt do texto final
+Esse texto se repetem em todos os resumos, pensar numa estratégia de primeiro fazer um resumo do texto, e texto passar pelo prompt.
+
+## 4) Processo de AutoSplit
+Criar um processo para que o split do texto seja feito sempre que o conjunto passar uma certa quantidade, dessa forma sempre que o resumo parcial ainda esteja grande, o sistema irá criar um novo resumo, para desse novo, se atendido as características de tamanho, gerar o resumo final.
+
+## 5) Corrigir a seleção dos modelos
+Os modelos devem ser selecionados pelo app, dessa forma, escolhido o modelo o sistema deve identificar se é do tipo t5 ou bart para selecionar as funções corretas.
+
+## 6) Na seleção do aplicativo, adicionar a seleção de Fast Tokenizer, Slow Tokenizer e Force Slow Tokenizer
 
 # PDF Article Summarization
 This project is a challenge from the Deep Learning course in the Data Science and AI MBA program at Faculdade Senac.
