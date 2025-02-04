@@ -51,6 +51,24 @@ docker run -p 8501:8501 -v ${pwd}/app:/app sumario_app
 
 No Windows, pode ser necessário trocar $(pwd) por ${PWD} ou usar o caminho completo, ex: -v "C:\Users\Fulano\seu_projeto\app:/app".
 
+# Melhorias
+
+## 1) Reduzir o Prompt / Não Incluir o Texto “Faça um resumo do texto a seguir...”
+
+## 2) Inserir opção de “penalidade de repetição” ou usar no_repeat_ngram_size
+Inserir nas opções o parametro de no_repeat_ngram_size, se este parametro for, isso indica evitar duplicar trechos de 3 tokens seguidos.
+Outro parametro que pode ser adiionado é o length_penalty, que quando >1.0 tende a encurtar a saída; <1.0 tende a alongar.
+Exemplo:
+    summary = summarizer(
+        prompt,
+        max_length=80,
+        min_length=20,
+        do_sample=False,
+        no_repeat_ngram_size=3,
+        length_penalty=2.0
+    )
+Isso diz ao modelo para penalizar a repetição e também para “encurtar” um pouco. Isso nem sempre é suportado em todas as versões do pipeline, mas geralmente funciona no transformers.pipeline("summarization").
+
 # PDF Article Summarization
 This project is a challenge from the Deep Learning course in the Data Science and AI MBA program at Faculdade Senac.
 
