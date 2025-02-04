@@ -1,17 +1,4 @@
 
-# projeto/
-# │
-# ├── app.py                     # Script principal Streamlit
-# ├── extract_text_plumber.py    # (1) Extrair texto de PDF
-# ├── choose_model_t5.py         # (2a) Script do modelo T5
-# ├── choose_model_bart.py       # (2a) Script do modelo BART
-# ├── define_summary_specs.py    # (3) Define prompt e/ou formatação
-# ├── summarize_article.py       # (4) Gerar o resumo final usando o modelo
-# ├── requirements.txt           # Lista de dependências
-# └── Dockerfile                 # Definição do container Docker
-
-# define_summary_specs.py
-
 def build_summary_prompt(text):
     """
     Cria um 'prompt' (instrução) que será passado ao modelo T5

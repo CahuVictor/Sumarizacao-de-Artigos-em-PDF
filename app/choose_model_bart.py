@@ -1,17 +1,27 @@
 
-# projeto/
-# │
-# ├── app.py                     # Script principal Streamlit
-# ├── extract_text_plumber.py    # (1) Extrair texto de PDF
-# ├── choose_model_t5.py         # (2a) Script do modelo T5
-# ├── choose_model_bart.py       # (2a) Script do modelo BART
-# ├── define_summary_specs.py    # (3) Define prompt e/ou formatação
-# ├── summarize_article.py       # (4) Gerar o resumo final usando o modelo
-# ├── requirements.txt           # Lista de dependências
-# └── Dockerfile                 # Definição do container Docker
-
-# choose_model.py
 from transformers import pipeline
+
+# Modelo pré-treinado para inglês
+# model_name = "facebook/bart-large-cnn"
+
+# max_length=130
+# min_length=30
+# do_sample=False
+
+# Função para resumir texto
+# summarizer = pipeline("summarization", model=model_name)
+
+# def summarize_text(text, max_length=130, min_length=30):
+#     #summarizer = pipeline("summarization", model=model_name)
+#     return summarizer(text, max_length=max_length, min_length=min_length, do_sample=False)
+
+# def summarize_text_pt(text, max_length=200, min_length=50):
+#     return summarizer(
+#         text,
+#         max_length=max_length,
+#         min_length=min_length,
+#         do_sample=False
+#     )[0]["summary_text"]
 
 def get_summarizer_bart(model_name="Jonatas/bart-large-portuguese-sum"):
     """

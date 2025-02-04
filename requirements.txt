@@ -3,3 +3,4 @@ pdfplumber
 #PyPDF2
 transformers
 torch
+sentencepiece

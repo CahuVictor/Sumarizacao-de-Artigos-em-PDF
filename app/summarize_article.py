@@ -1,26 +1,12 @@
 
-# projeto/
-# │
-# ├── app.py                     # Script principal Streamlit
-# ├── extract_text_plumber.py    # (1) Extrair texto de PDF
-# ├── choose_model_t5.py         # (2a) Script do modelo T5
-# ├── choose_model_bart.py       # (2a) Script do modelo BART
-# ├── define_summary_specs.py    # (3) Define prompt e/ou formatação
-# ├── summarize_article.py       # (4) Gerar o resumo final usando o modelo
-# ├── requirements.txt           # Lista de dependências
-# └── Dockerfile                 # Definição do container Docker
 
-# summarize_article.py
 import sys
 from textwrap import wrap
 
 # (1) Função para extrair texto
 from extract_text import extract_text_from_pdf
 
-# (2) Função para obter pipeline de sumarização
-from choose_model import get_summarizer
-
-# (3) Função que constrói o "prompt" (caso use T5)
+# (2) Função que constrói o "prompt" (caso use T5)
 from define_summary_specs import build_summary_prompt
 
 def chunk_text(text, chunk_size=2000):
@@ -87,7 +73,6 @@ def summarize_article(
     max_length=512,
     min_length=50,
 ):
-# model_name="unicamp-dl/ptt5-base-portuguese-vocab",
     """
     1) Extrai texto do PDF.
     2) Divide em chunks para não estourar limite.
@@ -104,7 +89,7 @@ def summarize_article(
     # Passo 3:  Carregar o modelo de acordo com model_type
     #    (evitando import circular, fazemos import aqui)
     if model_type == "T5":
-        from choose_model_t5 import get_summarizer_t5
+        from choose_model_t5_slow import get_summarizer_t5
         summarizer = get_summarizer_t5(model_name)
         summarize_func = summarize_chunk_t5
     else:
@@ -114,41 +99,31 @@ def summarize_article(
 
     # Passo 4: Resumir cada chunk
     partial_summaries = []
-    for chunk in chunks:
-        partial_summaries.append(summarize_func(summarizer, chunk, max_length, min_length))
-
-    # for i, chunk in enumerate(chunks, start=1):
-        # print(f"[Resumo parcial {i}/{len(chunks)}] Gerando resumo do chunk de tamanho {len(chunk)} caracteres...")
-        # partial_summary = summarize_chunk(summarizer, chunk, max_length, min_length)
-        # partial_summaries.append(partial_summary)
+    #for chunk in chunks:
+    for i, chunk in enumerate(chunks, start=1):
+        print(f"\n[Resumo parcial {i}/{len(chunks)}] Tamanho do chunk: {len(chunk)} caracteres")
+        partial_summary = summarize_func(
+            summarizer,
+            chunk,
+            max_length=max_length,
+            min_length=min_length
+        )
+        
+        #partial_summaries.append(summarize_func(summarizer, chunk, max_length, min_length))
+        partial_summaries.append(partial_summary)
+        print(f"Resumo do chunk {i} de tamanho {len(partial_summary)}:\n{partial_summary}")
 
     # Se houver mais de um chunk, unifica para gerar um "resumo do resumo"
     if len(partial_summaries) > 1:
         # Unir todos os resumos parciais
         combined_text = "\n".join(partial_summaries)
+        print("\nGerando resumo final a partir dos resumos parciais...\n")
         # Resumir novamente
         final_summary = summarize_func(summarizer, combined_text, max_length, min_length)
         return final_summary
     else:
         # Apenas 1 chunk => o resumo parcial é o final
         return partial_summaries[0]
-        
-    # Caso tenha múltiplos chunks, podemos juntar todos os resumos parciais
-    # e resumir novamente para obter um "resumo final".
-    # if len(chunks) > 1:
-        # combined_text = "\n".join(partial_summaries)
-        # print("\n[Resumo Final] Gerando resumo a partir dos resumos parciais...\n")
-        # final_prompt = build_summary_prompt(combined_text)
-        # final_summary = summarizer(
-            # final_prompt,
-            # max_length=max_length,
-            # min_length=min_length,
-            # do_sample=False
-        # )[0]["generated_text"]
-        # return final_summary
-    # else:
-        # # Se só tiver 1 chunk, não precisa resumir novamente
-        # return partial_summaries[0]
 
 if __name__ == "__main__":
     """
@@ -172,19 +147,27 @@ if __name__ == "__main__":
     chunk_size = 2000
 
     # Gera o resumo
-    if (chunk_size <= 0):
-        resumo_final = summarize_article(
-            pdf_path, 
-            model_name=model_name
-        )
-    else:
-        resumo_final = summarize_article(
-            pdf_path,
-            model_name=model_name,
-            chunk_size=chunk_size,
-            max_length=512,
-            min_length=50
-        )
+    # if (chunk_size <= 0):
+    #     resumo_final = summarize_article(
+    #         pdf_path, 
+    #         model_name=model_name
+    #     )
+    # else:
+    #     resumo_final = summarize_article(
+    #         pdf_path,
+    #         model_name=model_name,
+    #         chunk_size=chunk_size,
+    #         max_length=512,
+    #         min_length=50
+    #     )
+    resumo_final = summarize_article(
+        pdf_path,
+        model_name=model_name,
+        model_type="T5",
+        chunk_size=chunk_size,
+        max_length=512,
+        min_length=50
+    )
 
     print("\n--- RESUMO FINAL ---\n")
     print(resumo_final)
