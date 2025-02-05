@@ -3,6 +3,7 @@
 import streamlit as st
 import tempfile
 import os
+import time
 
 #from app.summarize_article import summarize_article
 # Dentro de app.py, que está em /app/app.py
@@ -77,9 +78,20 @@ def main():
                     #     min_length=min_length
                     # )
                     # 1) Extrair texto
+                    # Marca o tempo inicial
+                    start_time = time.time()
                     pdf_text = extract_text_from_pdf(tmp_path)
+                    st.write(f"Texto extraído[{len(pdf_text)}]: {pdf_text}")
+                    # Calcula o tempo total de processamento do chunk
+                    end_time = time.time()
+                    process_time = end_time - start_time
+                    st.write(f"**[Extract Text to PDF]** Tempo de processamento: {process_time:.2f} segundos")
+
                     
                     # 2) Carregar o pipeline do modelo
+                    # Marca o tempo inicial
+                    start_time = time.time()
+
                     if model_type == "T5":
                         from choose_model_t5_slow import get_summarizer_t5
                         summarizer = get_summarizer_t5(model_name_input)
@@ -88,16 +100,32 @@ def main():
                         from choose_model_bart import get_summarizer_bart
                         summarizer = get_summarizer_bart(model_name_input)
                         summarize_func = summarize_chunk_bart
+                    
+                    # Calcula o tempo total de processamento do chunk
+                    end_time = time.time()
+                    process_time = end_time - start_time
+                    st.write(f"**[Import Model]** Tempo de processamento: {process_time:.2f} segundos")
+
+                    st.write(f"Selecionado modelo para gerar resumo")
 
                     # 3) Dividir texto em chunks
+                    # Marca o tempo inicial
+                    start_time = time.time()
+                    st.write(f"Dividindo texto em blocos")
                     chunks = chunk_text(pdf_text, chunk_size=chunk_size)
                     st.write(f"Texto dividido em {len(chunks)} bloco(s).")
+                    # Calcula o tempo total de processamento do chunk
+                    end_time = time.time()
+                    process_time = end_time - start_time
+                    st.write(f"**[Split Text in chunks]** Tempo de processamento: {process_time:.2f} segundos")
 
                     partial_summaries = []
                     # Criar uma barra de progresso
                     progress_bar = st.progress(0)
 
                     for i, chunk in enumerate(chunks, start=1):
+                        # Marca o tempo inicial
+                        start_time = time.time()
                         st.write(f"**Processando chunk {i}/{len(chunks)}** (tamanho: {len(chunk)} caracteres)")
 
                         # Resumo parcial
@@ -109,6 +137,11 @@ def main():
                         )
                         partial_summaries.append(partial_summary)
 
+                        # Calcula o tempo total de processamento do chunk
+                        end_time = time.time()
+                        process_time = end_time - start_time
+                        st.write(f"**[Chunk {i}]** Tempo de processamento: {process_time:.2f} segundos")
+
                         # Mostrar resumo parcial
                         st.write(f"**Resumo parcial {i} / {len(partial_summary)}:**")
                         st.write(partial_summary)
@@ -117,16 +150,24 @@ def main():
                         progress_bar.progress(i/len(chunks))
                     
                     if len(partial_summaries) > 1:
-                        st.write(f"**Combinacao dos resusmos parciais ( {len(combined_text)} )...**")
                         combined_text = "\n".join(partial_summaries)
+                        st.write(f"**Combinacao dos resusmos parciais ( {len(combined_text)} )...**")
                         st.write(combined_text)
                     
                     partial_summaries_2 = []
                     group_size = 4
                     for i in range(0, len(partial_summaries), group_size):
+                        # Marca o tempo inicial
+                        start_time = time.time()
+
                         group_text = "\n".join(partial_summaries[i:i+group_size])
                         sub_summary = summarize_func(summarizer, group_text, max_length, min_length)
                         partial_summaries_2.append(sub_summary)
+
+                        # Calcula o tempo total de processamento do chunk
+                        end_time = time.time()
+                        process_time = end_time - start_time
+                        st.write(f"**[sub-sumary {i}]** Tempo de processamento: {process_time:.2f} segundos")
 
                         # Mostrar resumo parcial
                         st.write(f"**Resumo parcial {i} / {len(sub_summary)}:**")
@@ -141,13 +182,21 @@ def main():
                     #final_text = "\n".join(partial_summaries_2)
 
                     try:
+                        # Marca o tempo inicial
+                        start_time = time.time()
+
                         final_summary = summarize_func(
                             summarizer,
                             combined_text,
                             max_length=max_length,
                             min_length=min_length
                         )
-                        return final_summary
+
+                        # Calcula o tempo total de processamento do chunk
+                        end_time = time.time()
+                        process_time = end_time - start_time
+                        st.write(f"**[Final sumary]** Tempo de processamento: {process_time:.2f} segundos")
+                        #return final_summary
 
                     except (ValueError, RuntimeError) as e:
                         # Aqui capturamos os erros mais prováveis
